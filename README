@@ -1,6 +1,6 @@
 nraid is a raid system that allows the creation of raid arrays with disks of non-uniform size.  It accomplishes this by using only sectors in which at least the requisite number of disks have.  If there are enough disks with a sector for parity, parity is stored; othewise a copy of the data is stored.
 
 Timeline:
-Example
-Simulation in C with disks as files
-Merge into mdadm 
+* Simulation and profiling in Ruby (here)
+* Simulation in C with disks as files
+* Merge into mdadm 
