@@ -100,13 +100,13 @@ $data_blocks.each_with_index { |d,i| print "Group %2d: Disks: %s\n" % [i,d.join(
 
 def print_disk_array
 	block_width = $disks.map { |d| d.map { |i| i.length }.max }.max
-	sep_width = (block_width + 3)
+	sep_width = (block_width + 4)
 	$disks.each_with_index do |d,i|
 		print "%s" % ('-' * sep_width)
 	end
 	print "\n"
 	$disks.each_with_index do |d,i|
-		print "%#{block_width}s| |" % ["Disk #{i}"]
+		print "%#{block_width}s|  |" % ["Disk #{i}"]
 	end
 	print "\n"
 	$disks.each_with_index do |d,i|
@@ -116,11 +116,26 @@ def print_disk_array
 	$disk_sizes.max.times do |i|
 		$disks.each_with_index do |d,di|
 			parity_type = case $storage_style[i]
-				when :unused then 'N'
-				when :duplicate then 'D'
-				else 'P'
+				when :unused then 'NN'
+				when :duplicate then 'DD'
+				when :single_parity then 'SP'
+				else 
+					pt = ''
+					$parity[i].each_with_index do |p, pi|
+						# pp p
+						# pp di
+						# pp pi
+						# pp '---'
+						if p == di then
+							pt = case pi
+								when 0 then 'P1'
+								when 1 then 'P2'
+							end
+						end
+					end
+					pt
 			end
-			print "%#{block_width}s|%1s|" % [(d[i] || ($disk_sizes[di] < (i+1) ? "--DNE--" : "--NU--")), $parity[i].include?(di) ? parity_type : ' ']
+			print "%#{block_width}s|%2s|" % [(d[i] || ($disk_sizes[di] < (i+1) ? "--DNE--" : "--NU--")), $parity[i].include?(di) ? parity_type : ' ']
 		end
 		print "\n"
 	end
