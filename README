@@ -21,56 +21,56 @@ Disk  3: 7
 Disk  4: 8
 
 Disks with groups in common:
- 0: 0,1,2,3,4
- 1: 0,1,2,3,4
- 2: 0,1,2,3,4
- 3: 0,1,2,3,4
- 4: 0,1,2,3,4
- 5: 2,3,4
- 6: 3,4
- 7: 4
+Group  0: Disks: 0,1,2,3,4
+Group  1: Disks: 0,1,2,3,4
+Group  2: Disks: 0,1,2,3,4
+Group  3: Disks: 0,1,2,3,4
+Group  4: Disks: 0,1,2,3,4
+Group  5: Disks: 2,3,4
+Group  6: Disks: 3,4
+Group  7: Disks: 4
 
 Group storage engine:
- 0: dual_parody
- 1: dual_parody
- 2: dual_parody
- 3: dual_parody
- 4: dual_parody
- 5: single_parity
- 6: duplicate
- 7: unused
+Group  0: dual_parody
+Group  1: dual_parody
+Group  2: dual_parody
+Group  3: dual_parody
+Group  4: dual_parody
+Group  5: single_parity
+Group  6: duplicate
+Group  7: unused
 
-Blocks in each group:
- 0: 3
- 1: 3
- 2: 3
- 3: 3
- 4: 3
- 5: 2
- 6: 1
- 7: 0
+Usable Blocks in each group:
+Group  0: Blocks: 3
+Group  1: Blocks: 3
+Group  2: Blocks: 3
+Group  3: Blocks: 3
+Group  4: Blocks: 3
+Group  5: Blocks: 2
+Group  6: Blocks: 1
+Group  7: Blocks: 0
 
 Max block available for storage: 17
 
 Disks with parity for a group:
- 0: 0,4
- 1: 1,3
- 2: 3,2
- 3: 3,1
- 4: 4,0
- 5: 2
- 6: 4
- 7: 
+Group  0: Disks: 0,4
+Group  1: Disks: 1,3
+Group  2: Disks: 3,2
+Group  3: Disks: 3,1
+Group  4: Disks: 4,0
+Group  5: Disks: 2
+Group  6: Disks: 4
+Group  7: Disks: 
 
 Disks with data for a group:
- 0: 1,2,3
- 1: 0,2,4
- 2: 0,1,4
- 3: 0,2,4
- 4: 1,2,3
- 5: 3,4
- 6: 3
- 7: 
+Group  0: Disks: 1,2,3
+Group  1: Disks: 0,2,4
+Group  2: Disks: 0,1,4
+Group  3: Disks: 0,2,4
+Group  4: Disks: 1,2,3
+Group  5: Disks: 3,4
+Group  6: Disks: 3
+Group  7: Disks: 
 Wrote 'hi<block number>' to each block
 ------------------------------------------------------------------------------------------
          Disk 0| |         Disk 1| |         Disk 2| |         Disk 3| |         Disk 4| |

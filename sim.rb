@@ -87,16 +87,16 @@ $disk_sizes.each_with_index do |d, i|
 	print "Disk %2d: %d\n" % [i,d]
 end
 print "\nDisks with groups in common:\n"
-$common.each_with_index { |d,i| print "%2d: %s\n" % [i,d.join(',')]}
+$common.each_with_index { |d,i| print "Group %2d: Disks: %s\n" % [i,d.join(',')]}
 print "\nGroup storage engine:\n"
-$storage_style.each_with_index { |d,i| print "%2d: %s\n" % [i,d]}
-print "\nBlocks in each group:\n"
-$total_storage.each_with_index { |d,i| print "%2d: %d\n" % [i,d]}
+$storage_style.each_with_index { |d,i| print "Group %2d: %s\n" % [i,d]}
+print "\nUsable Blocks in each group:\n"
+$total_storage.each_with_index { |d,i| print "Group %2d: Blocks: %d\n" % [i,d]}
 print "\nMax block available for storage: %d\n" % [max_block = ($total_storage.inject{ |ttl,x| ttl.to_i + x.to_i }) -1]
 print "\nDisks with parity for a group:\n"
-$parity.each_with_index { |d,i| print "%2d: %s\n" % [i,d.join(',')]}
+$parity.each_with_index { |d,i| print "Group %2d: Disks: %s\n" % [i,d.join(',')]}
 print "\nDisks with data for a group:\n"
-$data_blocks.each_with_index { |d,i| print "%2d: %s\n" % [i,d.join(',')]}
+$data_blocks.each_with_index { |d,i| print "Group %2d: Disks: %s\n" % [i,d.join(',')]}
 
 def print_disk_array
 	block_width = $disks.map { |d| d.map { |i| i.length }.max }.max
