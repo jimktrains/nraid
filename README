@@ -1,4 +1,4 @@
-nraid is a raid system that allows the creation of raid arrays with disks of non-uniform size.  It accomplishes this by using only sectors in which at least the requisite number of disks have.  If there are enough disks with a sector for parity, parity is stored; othewise a copy of the data is stored.
+nraid is a raid system that allows the creation of raid arrays with disks of non-uniform size.  It accomplishes this by using only sectors in which at least the requisite number of disks in common.  If there are enough disks with a sector for parity, parity is stored; otherwise a copy of the data is stored.
 
 Timeline:
 * Simulation and profiling in Ruby (here)
