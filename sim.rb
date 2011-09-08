@@ -36,8 +36,8 @@ module Enumerable
 end
 
 
-$disks = [[],[],[],[]]
-$disk_sizes = [5,6,6,7]
+$disks = [[],[],[],[],[]]
+$disk_sizes = [5,5,6,7,8]
 
 
 
@@ -67,7 +67,10 @@ $disk_sizes.max.times do |block|
 		when :unused then []
 		when :duplicate then [$common[block][1]]
 		when :single_parity then [ block % $common[block].size ]
-		else [ (block % $common[block].size),  $common[block].size-1-(block % $common[block].size) ]
+		else 
+			a = [ (block % $common[block].size),  $common[block].size-1-(block % $common[block].size) ]
+			a[0] = (a[0] + 1 % $common[block].size) if a[0] == a[1]
+			a
 	end
 	$data_blocks[block] =  
 		case $storage_style[block]
@@ -78,24 +81,25 @@ $disk_sizes.max.times do |block|
 end
 
 
-
-pp "Disks with groups in common:"
-pp $common
-pp "Group storage:"
-pp $storage_style
-pp "Blocks in each group"
-pp $total_storage
-pp "Max block available for storage"
-pp max_block = ($total_storage.inject{ |ttl,x| ttl.to_i + x.to_i }) -1
-pp "Max and min blocks in each group"
-pp $max_block
-pp "Which disk parity is on in each group"
-pp $parity
-pp "Which disk data is on in each group"
-pp $data_blocks
+print "%d Disks\n" % $disk_sizes.size
+print "Sizes:\n"
+$disk_sizes.each_with_index do |d, i|
+	print "Disk %2d: %d\n" % [i,d]
+end
+print "\nDisks with groups in common:\n"
+$common.each_with_index { |d,i| print "%2d: %s\n" % [i,d.join(',')]}
+print "\nGroup storage engine:\n"
+$storage_style.each_with_index { |d,i| print "%2d: %s\n" % [i,d]}
+print "\nBlocks in each group:\n"
+$total_storage.each_with_index { |d,i| print "%2d: %d\n" % [i,d]}
+print "\nMax block available for storage: %d\n" % [max_block = ($total_storage.inject{ |ttl,x| ttl.to_i + x.to_i }) -1]
+print "\nDisks with parity for a group:\n"
+$parity.each_with_index { |d,i| print "%2d: %s\n" % [i,d.join(',')]}
+print "\nDisks with data for a group:\n"
+$data_blocks.each_with_index { |d,i| print "%2d: %s\n" % [i,d.join(',')]}
 
 def print_disk_array
-	block_width = 13
+	block_width = $disks.map { |d| d.map { |i| i.length }.max }.max
 	sep_width = (block_width + 3)
 	$disks.each_with_index do |d,i|
 		print "%s" % ('-' * sep_width)
@@ -138,22 +142,28 @@ def write_block(block, data)
 		when :unused then ''
 		when :duplicate then $disks[$parity[group][0]][block_on_disk] = data
 		else
-			ttl = ''
-			# Need to fix:-\
-			parity = $data_blocks[group].inject('') { |ttl, b| ttl + $disks[b][block_on_disk].to_s + '+' }
-			$parity[group].each { |p| $disks[p][block_on_disk] = parity }
+			$parity[group].each_with_index do |p, i| 
+				$disks[p][block_on_disk] = case i
+					when 0 then $data_blocks[group].inject('') { |ttl, b| ttl + $disks[b][block_on_disk].to_s + '+' }
+					when 1 then $data_blocks[group].inject('') { |ttl, b| ttl + $disks[b][block_on_disk].to_s + '*' }
+				end
+			end
 	end
 	
 end
 
 (0..max_block).each { |n| write_block n, 'hi' + n.to_s }
-
+print "Wrote 'hi<block number>' to each block\n"
 print_disk_array
 
 write_block 3, 'test'
-
+print "Wrote 'test' to block 3\n"
 print_disk_array
 
-write_block 10, 'wazup'
+write_block 15, 'wazup'
+print "Wrote 'wazup' to block 15\n"
+print_disk_array
 
+write_block 17, 'wow'
+print "Wrote 'wow' to block 17\n"
 print_disk_array

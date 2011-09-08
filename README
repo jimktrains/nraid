@@ -2,5 +2,124 @@ nraid is a raid system that allows the creation of raid arrays with disks of non
 
 Timeline:
 * Simulation and profiling in Ruby (here)
-* Simulation in C with disks as files
+* Simulation in C with fuse
 * Merge into mdadm 
+
+
+
+Simulation
+----------
+For our purposes, parity is all the blocks data joined with a + or * (type 2 parity)
+
+
+5 Disks
+Sizes:
+Disk  0: 5
+Disk  1: 5
+Disk  2: 6
+Disk  3: 7
+Disk  4: 8
+
+Disks with groups in common:
+ 0: 0,1,2,3,4
+ 1: 0,1,2,3,4
+ 2: 0,1,2,3,4
+ 3: 0,1,2,3,4
+ 4: 0,1,2,3,4
+ 5: 2,3,4
+ 6: 3,4
+ 7: 4
+
+Group storage engine:
+ 0: dual_parody
+ 1: dual_parody
+ 2: dual_parody
+ 3: dual_parody
+ 4: dual_parody
+ 5: single_parity
+ 6: duplicate
+ 7: unused
+
+Blocks in each group:
+ 0: 3
+ 1: 3
+ 2: 3
+ 3: 3
+ 4: 3
+ 5: 2
+ 6: 1
+ 7: 0
+
+Max block available for storage: 17
+
+Disks with parity for a group:
+ 0: 0,4
+ 1: 1,3
+ 2: 3,2
+ 3: 3,1
+ 4: 4,0
+ 5: 2
+ 6: 4
+ 7: 
+
+Disks with data for a group:
+ 0: 1,2,3
+ 1: 0,2,4
+ 2: 0,1,4
+ 3: 0,2,4
+ 4: 1,2,3
+ 5: 3,4
+ 6: 3
+ 7: 
+Wrote 'hi<block number>' to each block
+------------------------------------------------------------------------------------------
+         Disk 0| |         Disk 1| |         Disk 2| |         Disk 3| |         Disk 4| |
+------------------------------------------------------------------------------------------
+   hi0+hi1+hi2+|P|            hi0| |            hi1| |            hi2| |   hi0*hi1*hi2*|P|
+            hi3| |   hi3+hi4+hi5+|P|            hi4| |   hi3*hi4*hi5*|P|            hi5| |
+            hi6| |            hi7| |   hi6*hi7*hi8*|P|   hi6+hi7+hi8+|P|            hi8| |
+            hi9| | hi9*hi10*hi11*|P|           hi10| | hi9+hi10+hi11+|P|           hi11| |
+hi12*hi13*hi14*|P|           hi12| |           hi13| |           hi14| |hi12+hi13+hi14+|P|
+        --DNE--| |        --DNE--| |     hi15+hi16+|P|           hi15| |           hi16| |
+        --DNE--| |        --DNE--| |        --DNE--| |           hi17| |           hi17|D|
+        --DNE--| |        --DNE--| |        --DNE--| |        --DNE--| |         --NU--| |
+------------------------------------------------------------------------------------------
+Wrote 'test' to block 3
+------------------------------------------------------------------------------------------
+         Disk 0| |         Disk 1| |         Disk 2| |         Disk 3| |         Disk 4| |
+------------------------------------------------------------------------------------------
+   hi0+hi1+hi2+|P|            hi0| |            hi1| |            hi2| |   hi0*hi1*hi2*|P|
+           test| |  test+hi4+hi5+|P|            hi4| |  test*hi4*hi5*|P|            hi5| |
+            hi6| |            hi7| |   hi6*hi7*hi8*|P|   hi6+hi7+hi8+|P|            hi8| |
+            hi9| | hi9*hi10*hi11*|P|           hi10| | hi9+hi10+hi11+|P|           hi11| |
+hi12*hi13*hi14*|P|           hi12| |           hi13| |           hi14| |hi12+hi13+hi14+|P|
+        --DNE--| |        --DNE--| |     hi15+hi16+|P|           hi15| |           hi16| |
+        --DNE--| |        --DNE--| |        --DNE--| |           hi17| |           hi17|D|
+        --DNE--| |        --DNE--| |        --DNE--| |        --DNE--| |         --NU--| |
+------------------------------------------------------------------------------------------
+Wrote 'wazup' to block 15
+------------------------------------------------------------------------------------------
+         Disk 0| |         Disk 1| |         Disk 2| |         Disk 3| |         Disk 4| |
+------------------------------------------------------------------------------------------
+   hi0+hi1+hi2+|P|            hi0| |            hi1| |            hi2| |   hi0*hi1*hi2*|P|
+           test| |  test+hi4+hi5+|P|            hi4| |  test*hi4*hi5*|P|            hi5| |
+            hi6| |            hi7| |   hi6*hi7*hi8*|P|   hi6+hi7+hi8+|P|            hi8| |
+            hi9| | hi9*hi10*hi11*|P|           hi10| | hi9+hi10+hi11+|P|           hi11| |
+hi12*hi13*hi14*|P|           hi12| |           hi13| |           hi14| |hi12+hi13+hi14+|P|
+        --DNE--| |        --DNE--| |    wazup+hi16+|P|          wazup| |           hi16| |
+        --DNE--| |        --DNE--| |        --DNE--| |           hi17| |           hi17|D|
+        --DNE--| |        --DNE--| |        --DNE--| |        --DNE--| |         --NU--| |
+------------------------------------------------------------------------------------------
+Wrote 'wow' to block 17
+------------------------------------------------------------------------------------------
+         Disk 0| |         Disk 1| |         Disk 2| |         Disk 3| |         Disk 4| |
+------------------------------------------------------------------------------------------
+   hi0+hi1+hi2+|P|            hi0| |            hi1| |            hi2| |   hi0*hi1*hi2*|P|
+           test| |  test+hi4+hi5+|P|            hi4| |  test*hi4*hi5*|P|            hi5| |
+            hi6| |            hi7| |   hi6*hi7*hi8*|P|   hi6+hi7+hi8+|P|            hi8| |
+            hi9| | hi9*hi10*hi11*|P|           hi10| | hi9+hi10+hi11+|P|           hi11| |
+hi12*hi13*hi14*|P|           hi12| |           hi13| |           hi14| |hi12+hi13+hi14+|P|
+        --DNE--| |        --DNE--| |    wazup+hi16+|P|          wazup| |           hi16| |
+        --DNE--| |        --DNE--| |        --DNE--| |            wow| |            wow|D|
+        --DNE--| |        --DNE--| |        --DNE--| |        --DNE--| |         --NU--| |
+------------------------------------------------------------------------------------------
